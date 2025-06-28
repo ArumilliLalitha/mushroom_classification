@@ -43,8 +43,3 @@ UCI Mushroom Dataset
   Ring type, spore print color
   Habitat and population type
 
-
-
-📷 Screenshot
-  
-![Screenshot](https://github.com/ArumilliLalitha/mushroom_classification/blob/main/Screenshot%20(215).png)
