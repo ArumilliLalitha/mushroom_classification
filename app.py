@@ -9,6 +9,7 @@ st.set_page_config(page_title="🍄 Mushroom Classifier", layout="wide")
 
 st.title("🍄 Mushroom Classification App")
 st.markdown("### Enter mushroom characteristics below to predict if it's **Edible** or **Poisonous**.")
+st.markdown("#### 👩‍💻 Developed by **A.P.R.V. Lalitha** using streamlit app")
 
 # Load data
 @st.cache_data
