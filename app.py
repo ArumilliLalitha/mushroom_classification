@@ -4,6 +4,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report
 
 # Load dataset
 data = pd.read_csv("https://archive.ics.uci.edu/ml/machine-learning-databases/mushroom/agaricus-lepiota.data",
@@ -67,14 +68,17 @@ st.markdown("Enter mushroom characteristics below to predict if it's **Edible or
 user_input = {}
 for feature in X.columns:
     if feature in full_form_options:
-        options = [f"{k} - {v}" for k, v in full_form_options[feature].items()]
-        selected = st.sidebar.selectbox(feature, options, key=feature)
-        selected_key = selected.split(" - ")[0]  # extract original code like 'b'
-        user_input[feature] = selected_key
+        options = list(full_form_options[feature].values())
+        selected_full = st.sidebar.selectbox(feature, options, key=feature)
+        # get encoded letter
+        encoded = [k for k, v in full_form_options[feature].items() if v == selected_full][0]
+        user_input[feature] = encoded
     else:
         values = label_encoders[feature].classes_.tolist()
-        selected = st.sidebar.selectbox(feature, values, key=feature)
-        user_input[feature] = selected
+        readable_values = [full_form_options[feature][v] if v in full_form_options[feature] else v for v in values]
+        selected_full = st.sidebar.selectbox(feature, readable_values, key=feature)
+        encoded = [k for k, v in full_form_options[feature].items() if v == selected_full][0]
+        user_input[feature] = encoded
 
 # Predict button
 if st.sidebar.button("Predict"):
@@ -86,8 +90,3 @@ if st.sidebar.button("Predict"):
         st.success("✅ This mushroom is **Edible**.")
     else:
         st.error("⚠️ This mushroom is **Poisonous**!")
-
-
-
-
-
