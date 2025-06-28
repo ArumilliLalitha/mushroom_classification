@@ -4,20 +4,26 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, classification_report
 
-# Load dataset
-data = pd.read_csv("https://archive.ics.uci.edu/ml/machine-learning-databases/mushroom/agaricus-lepiota.data",
-                   header=None)
+st.set_page_config(page_title="🍄 Mushroom Classifier", layout="wide")
 
-# Define column names
-columns = ["class", "cap-shape", "cap-surface", "cap-color", "bruises", "odor", "gill-attachment", "gill-spacing",
-           "gill-size", "gill-color", "stalk-shape", "stalk-root", "stalk-surface-above-ring",
-           "stalk-surface-below-ring", "stalk-color-above-ring", "stalk-color-below-ring", "veil-type", "veil-color",
-           "ring-number", "ring-type", "spore-print-color", "population", "habitat"]
-data.columns = columns
+st.title("🍄 Mushroom Classification App")
+st.markdown("### Enter mushroom characteristics below to predict if it's **Edible** or **Poisonous**.")
 
-# Full form options for UI
+# Load data
+@st.cache_data
+def load_data():
+    url = "https://archive.ics.uci.edu/ml/machine-learning-databases/mushroom/agaricus-lepiota.data"
+    columns = ["class", "cap-shape", "cap-surface", "cap-color", "bruises", "odor", "gill-attachment", "gill-spacing",
+               "gill-size", "gill-color", "stalk-shape", "stalk-root", "stalk-surface-above-ring",
+               "stalk-surface-below-ring", "stalk-color-above-ring", "stalk-color-below-ring", "veil-type",
+               "veil-color", "ring-number", "ring-type", "spore-print-color", "population", "habitat"]
+    df = pd.read_csv(url, header=None, names=columns)
+    return df
+
+df = load_data()
+
+# Full form options
 full_form_options = {
     "cap-shape": {"b": "Bell", "c": "Conical", "f": "Flat", "k": "Knobbed", "s": "Sunken", "x": "Convex"},
     "cap-surface": {"f": "Fibrous", "g": "Grooves", "s": "Smooth", "y": "Scaly"},
@@ -43,50 +49,43 @@ full_form_options = {
     "habitat": {"d": "Woods", "g": "Grasses", "l": "Leaves", "m": "Meadows", "p": "Paths", "u": "Urban", "w": "Waste"}
 }
 
-# Encode all data
+# Encode features
 label_encoders = {}
-for col in data.columns:
+for col in df.columns:
     le = LabelEncoder()
-    data[col] = le.fit_transform(data[col])
+    df[col] = le.fit_transform(df[col])
     label_encoders[col] = le
 
-# Split data
-X = data.drop("class", axis=1)
-y = data["class"]
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
 # Train model
+X = df.drop("class", axis=1)
+y = df["class"]
 model = RandomForestClassifier(n_estimators=100, random_state=42)
-model.fit(X_train, y_train)
+model.fit(X, y)
 
-# Streamlit UI
-st.set_page_config(page_title="Mushroom Classifier", layout="wide")
-st.title("🍄 Mushroom Classification App")
-st.markdown("Enter mushroom characteristics below to predict if it's **Edible or Poisonous**.")
+# Collect user input
+def get_user_input():
+    user_data = {}
+    st.sidebar.header("Choose mushroom features:")
+    for col in X.columns:
+        if col in full_form_options:
+            full_values = list(full_form_options[col].values())
+            selected = st.sidebar.selectbox(f"{col}", full_values)
+            # Get encoded short form (like 'f') from full form (like "Foul")
+            short = [k for k, v in full_form_options[col].items() if v == selected][0]
+            encoded = label_encoders[col].transform([short])[0]
+            user_data[col] = encoded
+        else:
+            # fallback for features not in full_form_options
+            options = list(label_encoders[col].classes_)
+            selected = st.sidebar.selectbox(f"{col}", options)
+            encoded = label_encoders[col].transform([selected])[0]
+            user_data[col] = encoded
+    return pd.DataFrame([user_data])
 
-# Collect user input via dropdowns
-user_input = {}
-for feature in X.columns:
-    if feature in full_form_options:
-        options = list(full_form_options[feature].values())
-        selected_full = st.sidebar.selectbox(feature, options, key=feature)
-        # get encoded letter
-        encoded = [k for k, v in full_form_options[feature].items() if v == selected_full][0]
-        user_input[feature] = encoded
-    else:
-        values = label_encoders[feature].classes_.tolist()
-        readable_values = [full_form_options[feature][v] if v in full_form_options[feature] else v for v in values]
-        selected_full = st.sidebar.selectbox(feature, readable_values, key=feature)
-        encoded = [k for k, v in full_form_options[feature].items() if v == selected_full][0]
-        user_input[feature] = encoded
+user_input = get_user_input()
 
-# Predict button
-if st.sidebar.button("Predict"):
-    encoded_input = [label_encoders[col].transform([user_input[col]])[0] for col in X.columns]
-    prediction = model.predict(np.array(encoded_input).reshape(1, -1))[0]
-    result = label_encoders["class"].inverse_transform([prediction])[0]
+# Predict
+prediction = model.predict(user_input)[0]
+prediction_label = label_encoders['class'].inverse_transform([prediction])[0]
+st.success(f"### 🌟 The mushroom is predicted to be: **{'Edible' if prediction_label == 'e' else 'Poisonous'}**")
 
-    if result == 'e':
-        st.success("✅ This mushroom is **Edible**.")
-    else:
-        st.error("⚠️ This mushroom is **Poisonous**!")
