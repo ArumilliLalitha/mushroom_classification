@@ -7,9 +7,8 @@ from sklearn.ensemble import RandomForestClassifier
 
 st.set_page_config(page_title="🍄 Mushroom Classifier", layout="wide")
 
-st.title("🍄 Mushroom Classification App")
+st.markdown("<h1 style='font-size: 50px;'>🍄 Mushroom Classification App</h1>", unsafe_allow_html=True)
 st.markdown("### Enter mushroom characteristics below to predict if it's **Edible** or **Poisonous**.")
-st.markdown("Built with ❤️ by **A. Lalitha** using Streamlit")
 
 # Load data
 @st.cache_data
