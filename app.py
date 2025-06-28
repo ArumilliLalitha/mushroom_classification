@@ -9,6 +9,7 @@ st.set_page_config(page_title="🍄 Mushroom Classifier", layout="wide")
 
 st.title("🍄 Mushroom Classification App")
 st.markdown("### Enter mushroom characteristics below to predict if it's **Edible** or **Poisonous**.")
+st.markdown("Built with ❤️ by **A. Lalitha** using Streamlit")
 
 # Load data
 @st.cache_data
@@ -56,36 +57,29 @@ for col in df.columns:
     df[col] = le.fit_transform(df[col])
     label_encoders[col] = le
 
-# Train model
 X = df.drop("class", axis=1)
 y = df["class"]
 model = RandomForestClassifier(n_estimators=100, random_state=42)
 model.fit(X, y)
 
 # Collect user input
-def get_user_input():
-    user_data = {}
-    st.sidebar.header("Choose mushroom features:")
-    for col in X.columns:
-        if col in full_form_options:
-            full_values = list(full_form_options[col].values())
-            selected = st.sidebar.selectbox(f"{col}", full_values)
-            # Get encoded short form (like 'f') from full form (like "Foul")
-            short = [k for k, v in full_form_options[col].items() if v == selected][0]
-            encoded = label_encoders[col].transform([short])[0]
-            user_data[col] = encoded
-        else:
-            # fallback for features not in full_form_options
-            options = list(label_encoders[col].classes_)
-            selected = st.sidebar.selectbox(f"{col}", options)
-            encoded = label_encoders[col].transform([selected])[0]
-            user_data[col] = encoded
-    return pd.DataFrame([user_data])
-
-user_input = get_user_input()
+user_input = {}
+st.sidebar.header("Choose mushroom features:")
+for feature in X.columns:
+    if feature in full_form_options:
+        full_names = list(full_form_options[feature].values())
+        selected = st.sidebar.selectbox(f"{feature}", full_names, key=feature)
+        encoded = [k for k, v in full_form_options[feature].items() if v == selected][0]
+        user_input[feature] = encoded
+    else:
+        values = label_encoders[feature].classes_.tolist()
+        selected = st.sidebar.selectbox(f"{feature}", values, key=feature)
+        user_input[feature] = selected
 
 # Predict
-prediction = model.predict(user_input)[0]
-prediction_label = label_encoders['class'].inverse_transform([prediction])[0]
-st.success(f"### 🌟 The mushroom is predicted to be: **{'Edible' if prediction_label == 'e' else 'Poisonous'}**")
+if st.sidebar.button("Predict"):
+    encoded_input = [label_encoders[col].transform([user_input[col]])[0] for col in X.columns]
+    prediction = model.predict(np.array(encoded_input).reshape(1, -1))[0]
+    prediction_label = label_encoders['class'].inverse_transform([prediction])[0]
 
+    st.success(f"### 🌟 The mushroom is predicted to be: **{'Edible' if prediction_label == 'e' else 'Poisonous'}**")
