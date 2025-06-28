@@ -4,7 +4,6 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, classification_report
 
 # Load dataset
 data = pd.read_csv("https://archive.ics.uci.edu/ml/machine-learning-databases/mushroom/agaricus-lepiota.data",
@@ -19,28 +18,28 @@ data.columns = columns
 
 # Full form options for UI
 full_form_options = {
-    "cap-shape": {"b": "b - Bell", "c": "c - Conical", "f": "f - Flat", "k": "k - Knobbed", "s": "s - Sunken", "x": "x - Convex"},
-    "cap-surface": {"f": "f - Fibrous", "g": "g - Grooves", "s": "s - Smooth", "y": "y - Scaly"},
-    "cap-color": {"b": "b - Buff", "c": "c - Cinnamon", "e": "e - Red", "g": "g - Gray", "n": "n - Brown", "p": "p - Pink", "r": "r - Purple", "u": "u - Blue", "w": "w - White", "y": "y - Yellow"},
-    "bruises": {"f": "f - No", "t": "t - Yes"},
-    "odor": {"a": "a - Almond", "c": "c - Creosote", "f": "f - Foul", "l": "l - Anise", "m": "m - Musty", "n": "n - None", "p": "p - Pungent", "s": "s - Spicy", "y": "y - Fishy"},
-    "gill-attachment": {"a": "a - Attached", "f": "f - Free"},
-    "gill-spacing": {"c": "c - Close", "w": "w - Wide"},
-    "gill-size": {"b": "b - Broad", "n": "n - Narrow"},
-    "gill-color": {"b": "b - Buff", "e": "e - Red", "g": "g - Gray", "h": "h - Chocolate", "k": "k - Black", "n": "n - Brown", "o": "o - Orange", "p": "p - Pink", "r": "r - Purple", "u": "u - Blue", "w": "w - White", "y": "y - Yellow"},
-    "stalk-shape": {"e": "e - Enlarging", "t": "t - Tapering"},
-    "stalk-root": {"b": "b - Bulbous", "c": "c - Club", "e": "e - Equal", "r": "r - Rooted", "?": "? - Unknown"},
-    "stalk-surface-above-ring": {"f": "f - Fibrous", "k": "k - Silky", "s": "s - Smooth", "y": "y - Scaly"},
-    "stalk-surface-below-ring": {"f": "f - Fibrous", "k": "k - Silky", "s": "s - Smooth", "y": "y - Scaly"},
-    "stalk-color-above-ring": {"b": "b - Buff", "c": "c - Cinnamon", "e": "e - Red", "g": "g - Gray", "n": "n - Brown", "o": "o - Orange", "p": "p - Pink", "w": "w - White", "y": "y - Yellow"},
-    "stalk-color-below-ring": {"b": "b - Buff", "c": "c - Cinnamon", "e": "e - Red", "g": "g - Gray", "n": "n - Brown", "o": "o - Orange", "p": "p - Pink", "w": "w - White", "y": "y - Yellow"},
-    "veil-type": {"p": "p - Partial"},
-    "veil-color": {"n": "n - Brown", "o": "o - Orange", "w": "w - White", "y": "y - Yellow"},
-    "ring-number": {"n": "n - None", "o": "o - One", "t": "t - Two"},
-    "ring-type": {"e": "e - Evanescent", "f": "f - Flaring", "l": "l - Large", "n": "n - None", "p": "p - Pendant"},
-    "spore-print-color": {"b": "b - Buff", "h": "h - Chocolate", "k": "k - Black", "n": "n - Brown", "o": "o - Orange", "r": "r - Purple", "u": "u - Blue", "w": "w - White", "y": "y - Yellow"},
-    "population": {"a": "a - Abundant", "c": "c - Clustered", "n": "n - Numerous", "s": "s - Scattered", "v": "v - Several", "y": "y - Solitary"},
-    "habitat": {"d": "d - Woods", "g": "g - Grasses", "l": "l - Leaves", "m": "m - Meadows", "p": "p - Paths", "u": "u - Urban", "w": "w - Waste"}
+    "cap-shape": {"b": "Bell", "c": "Conical", "f": "Flat", "k": "Knobbed", "s": "Sunken", "x": "Convex"},
+    "cap-surface": {"f": "Fibrous", "g": "Grooves", "s": "Smooth", "y": "Scaly"},
+    "cap-color": {"b": "Buff", "c": "Cinnamon", "e": "Red", "g": "Gray", "n": "Brown", "p": "Pink", "r": "Purple", "u": "Blue", "w": "White", "y": "Yellow"},
+    "bruises": {"f": "No", "t": "Yes"},
+    "odor": {"a": "Almond", "c": "Creosote", "f": "Foul", "l": "Anise", "m": "Musty", "n": "None", "p": "Pungent", "s": "Spicy", "y": "Fishy"},
+    "gill-attachment": {"a": "Attached", "f": "Free"},
+    "gill-spacing": {"c": "Close", "w": "Wide"},
+    "gill-size": {"b": "Broad", "n": "Narrow"},
+    "gill-color": {"b": "Buff", "e": "Red", "g": "Gray", "h": "Chocolate", "k": "Black", "n": "Brown", "o": "Orange", "p": "Pink", "r": "Purple", "u": "Blue", "w": "White", "y": "Yellow"},
+    "stalk-shape": {"e": "Enlarging", "t": "Tapering"},
+    "stalk-root": {"b": "Bulbous", "c": "Club", "e": "Equal", "r": "Rooted", "?": "Unknown"},
+    "stalk-surface-above-ring": {"f": "Fibrous", "k": "Silky", "s": "Smooth", "y": "Scaly"},
+    "stalk-surface-below-ring": {"f": "Fibrous", "k": "Silky", "s": "Smooth", "y": "Scaly"},
+    "stalk-color-above-ring": {"b": "Buff", "c": "Cinnamon", "e": "Red", "g": "Gray", "n": "Brown", "o": "Orange", "p": "Pink", "w": "White", "y": "Yellow"},
+    "stalk-color-below-ring": {"b": "Buff", "c": "Cinnamon", "e": "Red", "g": "Gray", "n": "Brown", "o": "Orange", "p": "Pink", "w": "White", "y": "Yellow"},
+    "veil-type": {"p": "Partial"},
+    "veil-color": {"n": "Brown", "o": "Orange", "w": "White", "y": "Yellow"},
+    "ring-number": {"n": "None", "o": "One", "t": "Two"},
+    "ring-type": {"e": "Evanescent", "f": "Flaring", "l": "Large", "n": "None", "p": "Pendant"},
+    "spore-print-color": {"b": "Buff", "h": "Chocolate", "k": "Black", "n": "Brown", "o": "Orange", "r": "Purple", "u": "Blue", "w": "White", "y": "Yellow"},
+    "population": {"a": "Abundant", "c": "Clustered", "n": "Numerous", "s": "Scattered", "v": "Several", "y": "Solitary"},
+    "habitat": {"d": "Woods", "g": "Grasses", "l": "Leaves", "m": "Meadows", "p": "Paths", "u": "Urban", "w": "Waste"}
 }
 
 # Encode all data
@@ -68,11 +67,10 @@ st.markdown("Enter mushroom characteristics below to predict if it's **Edible or
 user_input = {}
 for feature in X.columns:
     if feature in full_form_options:
-        options = list(full_form_options[feature].values())
-        selected_full = st.sidebar.selectbox(feature, options, key=feature)
-        # get encoded letter
-        encoded = [k for k, v in full_form_options[feature].items() if v == selected_full][0]
-        user_input[feature] = encoded
+        options = [f"{k} - {v}" for k, v in full_form_options[feature].items()]
+        selected = st.sidebar.selectbox(feature, options, key=feature)
+        selected_key = selected.split(" - ")[0]  # extract original code like 'b'
+        user_input[feature] = selected_key
     else:
         values = label_encoders[feature].classes_.tolist()
         selected = st.sidebar.selectbox(feature, values, key=feature)
@@ -88,6 +86,7 @@ if st.sidebar.button("Predict"):
         st.success("✅ This mushroom is **Edible**.")
     else:
         st.error("⚠️ This mushroom is **Poisonous**!")
+
 
 
 
