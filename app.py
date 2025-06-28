@@ -11,7 +11,6 @@ st.set_page_config(page_title="Mushroom Classifier", layout="centered")
 st.title("🍄 Mushroom Classification App")
 st.markdown("Predict whether a mushroom is **Edible or Poisonous**.")
 
-# Load and process dataset
 @st.cache_data
 def load_data():
     url = "https://archive.ics.uci.edu/ml/machine-learning-databases/mushroom/agaricus-lepiota.data"
@@ -29,7 +28,6 @@ def load_data():
 
 data, label_encoders = load_data()
 
-# Train model
 X = data.drop("class", axis=1)
 y = data["class"]
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -39,16 +37,6 @@ acc = accuracy_score(y_test, model.predict(X_test))
 
 st.write(f"✅ Model trained with accuracy: **{acc:.2f}**")
 
-# Create Streamlit form
 st.subheader("🔍 Enter Mushroom Features")
 
-user_input = {}
-for col in X.columns:
-    options = list(label_encoders[col].classes_)
-    user_input[col] = st.selectbox(col.replace("-", " ").title(), options)
-
-if st.button("Predict"):
-    input_encoded = [label_encoders[col].transform([user_input[col]])[0] for col in X.columns]
-    prediction = model.predict([input_encoded])[0]
-    result = "🍴 Edible" if prediction == 0 else "☠️ Poisonous"
-    st.success(f"Prediction: **{result}**")
+us
