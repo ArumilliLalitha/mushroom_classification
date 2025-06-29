@@ -81,4 +81,4 @@ if st.sidebar.button("Predict"):
     prediction = model.predict(np.array(encoded_input).reshape(1, -1))[0]
     prediction_label = label_encoders['class'].inverse_transform([prediction])[0]
 
-    st.success(f"### 🌟 The mushroom is predicted to be: **{'Edible' if prediction_label == 'e' else 'Poisonous'}**")
+    st.success(f"### 🌟 The mushroom is predicted to be: **{'✅ Edible' if prediction_label == 'e' else '⚠️ Poisonous'}**")
