@@ -5,9 +5,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.ensemble import RandomForestClassifier
 
-st.set_page_config(page_title="🍄 Mushroom Classifier", layout="wide")
+st.set_page_config(page_title="🍄 Smart Mushroom Classifier", layout="wide")
 
-st.markdown("<h1 style='font-size: 50px;'>🍄 Mushroom Classification App</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='font-size: 90px;'>🍄 Mushroom Classification App</h1>", unsafe_allow_html=True)
 st.markdown("### Enter mushroom characteristics below to predict if it's **Edible** or **Poisonous**.")
 
 # Load data
