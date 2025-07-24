@@ -2,18 +2,18 @@
 
 A machine learning web app built using **Streamlit** to classify mushrooms as **Edible** or **Poisonous** based on their characteristics. It uses a **Random Forest Classifier** trained on the UCI Mushroom Dataset.
 
-## 🔗 Live App
+## Live App
 
 👉 [Launch the App](https://mushroomclassification-acaway8se7d4x8qrn2f3pb.streamlit.app/)
 
-## 📌 Features
+## Features
 
 - Select mushroom features using dropdown menus
 - Predict whether the mushroom is **Edible** or **Poisonous**
 - Built with `scikit-learn`, `pandas`, and `streamlit`
 - Interactive and user-friendly interface
 
-## 🧠 Technologies Used
+## Technologies Used
 
 - Python
 - Streamlit
@@ -21,7 +21,7 @@ A machine learning web app built using **Streamlit** to classify mushrooms as **
 - Pandas
 - UCI Mushroom Dataset
 
-## 📁 Dataset
+##  Dataset
 
 - **Source**: [UCI Machine Learning Repository – Mushroom Dataset](https://archive.ics.uci.edu/ml/datasets/mushroom)
 - **Size**: 8124 instances (mushroom samples), 23 features
@@ -30,7 +30,7 @@ A machine learning web app built using **Streamlit** to classify mushrooms as **
   - **Edible (`e`)**  
   - **Poisonous (`p`)**
 
-### 🔍 Features include:
+###  Features include:
 - Cap shape, color, and surface  
 - Bruises  
 - Odor  
