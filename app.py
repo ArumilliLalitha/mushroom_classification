@@ -4,13 +4,9 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report
 
-st.set_page_config(page_title="🍄 Smart Mushroom Classifier", layout="wide")
-
-st.markdown("<h1 style='font-size: 80px;'>🍄 Mushroom Classification App</h1>", unsafe_allow_html=True)
-st.markdown("### Enter mushroom characteristics below to predict if it's **Edible** or **Poisonous**.")
-
-# Load data
+# Load dataset
 @st.cache_data
 def load_data():
     url = "https://archive.ics.uci.edu/ml/machine-learning-databases/mushroom/agaricus-lepiota.data"
@@ -21,9 +17,7 @@ def load_data():
     df = pd.read_csv(url, header=None, names=columns)
     return df
 
-df = load_data()
-
-# Full form options
+# Full form options for UI
 full_form_options = {
     "cap-shape": {"b": "Bell", "c": "Conical", "f": "Flat", "k": "Knobbed", "s": "Sunken", "x": "Convex"},
     "cap-surface": {"f": "Fibrous", "g": "Grooves", "s": "Smooth", "y": "Scaly"},
@@ -48,55 +42,70 @@ full_form_options = {
     "population": {"a": "Abundant", "c": "Clustered", "n": "Numerous", "s": "Scattered", "v": "Several", "y": "Solitary"},
     "habitat": {"d": "Woods", "g": "Grasses", "l": "Leaves", "m": "Meadows", "p": "Paths", "u": "Urban", "w": "Waste"}
 }
-
-# Encode features
+df = load_data()
+# Encode all data
 label_encoders = {}
 for col in df.columns:
     le = LabelEncoder()
     df[col] = le.fit_transform(df[col])
     label_encoders[col] = le
 
+# Split data
 X = df.drop("class", axis=1)
 y = df["class"]
+
+# ADD HERE 👇
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
 # Split
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
+    X, y, test_size=0.5, random_state=42
 )
 
 # Train
 model = RandomForestClassifier(n_estimators=100, random_state=42)
 model.fit(X_train, y_train)
 
+# Predict
 y_pred = model.predict(X_test)
 
+# Evaluate
 accuracy = accuracy_score(y_test, y_pred)
 
 print("Accuracy:", accuracy)
-st.write("Accuracy:", accuracy)
 
-model = RandomForestClassifier(n_estimators=100, random_state=42)
+# Final training for app
 model.fit(X, y)
-# Collect user input
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state=42)
+
+
+# Streamlit UI
+st.set_page_config(page_title="Mushroom Classifier", layout="wide")
+st.title("🍄 Mushroom Classification App")
+st.markdown("Enter mushroom characteristics below to predict if it's **Edible or Poisonous**.")
+
+# Collect user input via dropdowns
 user_input = {}
-st.sidebar.header("Choose mushroom features:")
 for feature in X.columns:
     if feature in full_form_options:
-        full_names = list(full_form_options[feature].values())
-        selected = st.sidebar.selectbox(f"{feature}", full_names, key=feature)
-        encoded = [k for k, v in full_form_options[feature].items() if v == selected][0]
+        options = list(full_form_options[feature].values())
+        selected_full = st.sidebar.selectbox(feature, options, key=feature)
+        # get encoded letter
+        encoded = [k for k, v in full_form_options[feature].items() if v == selected_full][0]
         user_input[feature] = encoded
     else:
         values = label_encoders[feature].classes_.tolist()
-        selected = st.sidebar.selectbox(f"{feature}", values, key=feature)
+        selected = st.sidebar.selectbox(feature, values, key=feature)
         user_input[feature] = selected
 
-# Predict
+# Predict button
 if st.sidebar.button("Predict"):
     encoded_input = [label_encoders[col].transform([user_input[col]])[0] for col in X.columns]
     prediction = model.predict(np.array(encoded_input).reshape(1, -1))[0]
     prediction_label = label_encoders['class'].inverse_transform([prediction])[0]
 
     st.success(f"### 🌟 The mushroom is predicted to be: **{'✅ Edible' if prediction_label == 'e' else '⚠️ Poisonous'}**")
+
+    # 👇 ADD THIS HERE
+    st.write("Accuracy:", accuracy)
